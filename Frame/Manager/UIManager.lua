@@ -2,19 +2,20 @@
     UI管理器 - 负责界面的创建、显示、隐藏、销毁和层级管理
 ]]
 
--- 本地化全局函数
-local pairs = pairs
-local pcall = pcall
-local print = print
-local string_format = string.format
 local table_remove = table.remove
 
-local Pool = require("MVVM.Pool")
+local Pool = require("Frame.MVVM.Pool")
 
 local UIManager = class("UIManager")
 
--- 单例实例
 local _instance = nil
+
+function UIManager:getInstance()
+    if not _instance then
+        _instance = UIManager.new()
+    end
+    return _instance
+end
 
 function UIManager:ctor()
     -- 当前显示的界面
@@ -26,28 +27,25 @@ function UIManager:ctor()
     -- 界面配置
     self._viewConfigs = {}
     
-    -- 根节点（Cocos场景）
+    -- 根节点
     self._rootNode = nil
-end
 
---[[
-    获取单例
-    @return UIManager
-]]
-function UIManager:getInstance()
-    if not _instance then
-        _instance = UIManager.new()
-    end
-    return _instance
+    -- 是否已初始化
+    self._initialized = false
 end
 
 --[[
     初始化UI管理器
-    @param rootNode cc.Node 根节点（通常是Scene）
+    @param rootNode cc.Node 根节点
 ]]
 function UIManager:initialize(rootNode)
+    if self._initialized then
+        return
+    end
+
     self._rootNode = rootNode
     self:loadConfig()
+    self._initialized = true
 end
 
 --[[
@@ -93,7 +91,7 @@ function UIManager:showView(uid, params)
     
     local config = self._viewConfigs[uid]
     if not config then
-        print(string_format("[UIManager] 错误: 未注册的界面 '%s'", uid))
+        print("[UIManager] 错误: 未注册的界面 '" .. uid .. "'")
         return nil
     end
     
@@ -103,11 +101,12 @@ function UIManager:showView(uid, params)
     end
     
     -- 创建新的View和ViewModel
-    local view = config.viewClass.new(config, params)
+    local view = config.viewClass.new(config)
     local viewModel = nil
     
     if config.viewModelClass then
         viewModel = Pool.get(config.viewModelClass)
+        viewModel:setParams(params)
         viewModel:initialize()
     end
     
@@ -124,10 +123,7 @@ function UIManager:showView(uid, params)
     self._rootNode:addChild(view, zOrder)
     
     -- 保存引用
-    self._views[uid] = {
-        view = view,
-        viewModel = viewModel
-    }
+    self._views[uid] = view
     
     -- 添加到栈
     self._viewStack[#self._viewStack + 1] = uid
@@ -140,13 +136,10 @@ end
     @param uid number 界面ID
 ]]
 function UIManager:closeView(uid)
-    local viewData = self._views[uid]
-    if not viewData then
+    local view = self._views[uid]
+    if not view then
         return
     end
-    
-    local view = viewData.view
-    local viewModel = viewData.viewModel
     
     -- 从父节点移除
     if view:getParent() then
@@ -194,18 +187,7 @@ end
     @return View 界面实例（可能为nil）
 ]]
 function UIManager:getView(uid)
-    local viewData = self._views[uid]
-    return viewData and viewData.view or nil
-end
-
---[[
-    获取ViewModel实例
-    @param uid number 界面ID
-    @return ViewModel ViewModel实例（可能为nil）
-]]
-function UIManager:getViewModel(uid)
-    local viewData = self._views[uid]
-    return viewData and viewData.viewModel or nil
+    return self._views[uid]
 end
 
 --[[
@@ -226,6 +208,7 @@ function UIManager:destroy()
     self._viewStack = {}
     self._viewConfigs = {}
     self._rootNode = nil
+    self._initialized = false
 end
 
 return UIManager

@@ -5,8 +5,8 @@
 local M = {}
 
 local modules = {
-    "Manager.ModelManager",
-    "Manager.UIManager",
+    "Frame.Manager.ModelManager",
+    "Frame.Manager.UIManager",
 }
 
 function M.load()

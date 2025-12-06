@@ -1,5 +1,6 @@
 --[[
     主界面ViewModel
+    负责暴露属性给View绑定，并处理业务逻辑
 ]]
 
 local ViewModel = require("MVVM.ViewModel")
@@ -10,6 +11,9 @@ function MainViewModel:onInitialize()
     -- 注册命令
     self:registerCommand("addGold", self.onAddGold)
     self:registerCommand("addExp", self.onAddExp)
+    
+    -- 绑定Model属性（自动同步到ViewModel）
+    self:bindModelAll("user", {"name", "level", "gold", "exp", "maxExp"})
 end
 
 function MainViewModel:onAddGold(amount)
@@ -27,4 +31,3 @@ function MainViewModel:onAddExp(amount)
 end
 
 return MainViewModel
-

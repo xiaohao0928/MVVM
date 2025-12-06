@@ -61,6 +61,9 @@ function Pool.release(obj)
         return
     end
     
+    -- 标记为已回收，防止重复 release
+    obj._pooled = false
+    
     local className = obj.class.__cname
     local pool = getPool(className)
     
@@ -105,17 +108,6 @@ end
 ]]
 function Pool.clearAll()
     _pools = {}
-end
-
---[[
-    获取池中对象数量
-    @param class table 类
-    @return number 数量
-]]
-function Pool.getCount(class)
-    local className = class.__cname
-    local pool = _pools[className]
-    return pool and pool.count or 0
 end
 
 return Pool

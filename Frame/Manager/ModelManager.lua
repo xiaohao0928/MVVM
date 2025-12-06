@@ -2,31 +2,35 @@
     Model管理器 - 管理所有Model的创建、获取
 ]]
 
--- 本地化全局函数
-local pairs = pairs
-local pcall = pcall
-local print = print
-local string_format = string.format
-
 local ModelManager = class("ModelManager")
 
--- 单例实例
 local _instance = nil
 
-function ModelManager:ctor()
-    -- Model实例
-    self._models = {}
-end
-
---[[
-    获取单例
-    @return ModelManager
-]]
 function ModelManager:getInstance()
     if not _instance then
         _instance = ModelManager.new()
     end
     return _instance
+end
+
+function ModelManager:ctor()
+    -- Model实例
+    self._models = {}
+
+    -- 是否已初始化
+    self._initialized = false
+end
+
+--[[
+    初始化Model管理器
+]]
+function ModelManager:initialize()
+    if self._initialized then
+        return
+    end
+    
+    self:loadConfig()
+    self._initialized = true
 end
 
 --[[
@@ -69,7 +73,7 @@ end
 function ModelManager:getModel(modelName)
     local model = self._models[modelName]
     if not model then
-        print(string_format("[ModelManager] 错误: Model '%s' 不存在", modelName))
+        print("[ModelManager] 错误: Model '" .. modelName .. "' 不存在")
     end
     return model
 end
@@ -81,38 +85,6 @@ end
 ]]
 function ModelManager:hasModel(modelName)
     return self._models[modelName] ~= nil
-end
-
---[[
-    销毁Model实例
-    @param modelName string Model名称
-]]
-function ModelManager:destroyModel(modelName)
-    local model = self._models[modelName]
-    if model then
-        model:destroy()
-        self._models[modelName] = nil
-    end
-end
-
---[[
-    获取所有Model名称
-    @return table Model名称列表
-]]
-function ModelManager:getAllModelNames()
-    local names = {}
-    for name in pairs(self._models) do
-        names[#names + 1] = name
-    end
-    return names
-end
-
---[[
-    获取所有Model实例
-    @return table Model实例表 {modelName = modelInstance}
-]]
-function ModelManager:getAllModels()
-    return self._models
 end
 
 --[[
@@ -130,6 +102,7 @@ end
 ]]
 function ModelManager:destroy()
     self:destroyAllModels()
+    self._initialized = false
 end
 
 return ModelManager

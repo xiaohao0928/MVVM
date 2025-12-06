@@ -30,51 +30,58 @@ function ShopView:onInitialize()
 end
 
 function ShopView:onBindViewModel()
+    local topGoldLabel = self._topGoldLabel
+    local bottomGoldLabel = self._bottomGoldLabel
+    local buyBtnGoldLabel = self._buyBtnGoldLabel
+    local goldIconLabel = self._goldIconLabel
+    local priceLabel = self._priceLabel
+    local buyBtn = self._buyBtn
+    local vm = self:getViewModel()
+    
     -- 多个节点绑定同一个 gold 属性
     -- 1. 顶部显示
-    self:bind("user", "gold", self._topGoldLabel, function(label, value)
-        if label then
-            label:setString(string.format("%d", value or 0))
+    self:bindVM("gold", function(value)
+        if topGoldLabel then
+            topGoldLabel:setString(tostring(value or 0))
         end
     end)
     
-    -- 2. 底部显示（带格式化）
-    self:bind("user", "gold", self._bottomGoldLabel, function(label, value)
-        if label then
-            label:setString(string.format("拥有金币: %d", value or 0))
+    -- 2. 底部显示
+    self:bindVM("gold", function(value)
+        if bottomGoldLabel then
+            bottomGoldLabel:setString("拥有金币: " .. (value or 0))
         end
     end)
     
     -- 3. 购买按钮提示
-    self:bind("user", "gold", self._buyBtnGoldLabel, function(label, value)
-        if label then
-            label:setString(string.format("余额: %d", value or 0))
+    self:bindVM("gold", function(value)
+        if buyBtnGoldLabel then
+            buyBtnGoldLabel:setString("余额: " .. (value or 0))
         end
     end)
     
     -- 4. 金币图标旁（带千位分隔符）
-    self:bind("user", "gold", self._goldIconLabel, function(label, value)
-        if label then
+    self:bindVM("gold", function(value)
+        if goldIconLabel then
             local formatted = tostring(value or 0):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
-            label:setString(formatted)
+            goldIconLabel:setString(formatted)
         end
     end)
     
-    -- 5. 购买按钮状态也受金币影响
-    self:bind("user", "gold", self._buyBtn, function(btn, value)
-        if btn then
-            local price = 100 -- 假设商品价格100
-            btn:setEnabled((value or 0) >= price)
+    -- 5. 购买按钮状态
+    self:bindVM("gold", function(value)
+        if buyBtn then
+            local price = vm:get("itemPrice") or 100
+            buyBtn:setEnabled((value or 0) >= price)
         end
     end)
     
     -- 绑定价格
-    self:bind("shop", "itemPrice", self._priceLabel, function(label, value)
-        if label then
-            label:setString(string.format("价格: %d", value or 0))
+    self:bindVM("itemPrice", function(value)
+        if priceLabel then
+            priceLabel:setString("价格: " .. (value or 0))
         end
     end)
 end
 
 return ShopView
-

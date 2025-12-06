@@ -11,12 +11,6 @@ function UserModel:onInitialize()
     self:set("gold", 1000)
     self:set("exp", 0)
     self:set("maxExp", 100)
-    self:computed("expPercent", function()
-        return self:get("exp") / self:get("maxExp")
-    end)
-    self:computed("expPercentText", function()
-        return string.format("%.2f%%", self:get("expPercent") * 100)
-    end)
 end
 
 function UserModel:addGold(amount)

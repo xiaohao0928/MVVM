@@ -31,46 +31,51 @@ function MainView:onInitialize()
 end
 
 function MainView:onBindViewModel()
+    local nameLabel = self._nameLabel
+    local levelLabel = self._levelLabel
+    local goldLabel = self._goldLabel
+    local expLabel = self._expLabel
+    local expBar = self._expBar
+    local vm = self:getViewModel()
+    
     -- 绑定名称
-    self:bind("user", "name", self._nameLabel, function(label, value)
-        if label then
-            label:setString(value or "")
+    self:bindVM("name", function(value)
+        if nameLabel then
+            nameLabel:setString(value or "")
         end
     end)
     
     -- 绑定等级
-    self:bind("user", "level", self._levelLabel, function(label, value)
-        if label then
-            label:setString("Lv." .. (value or 1))
+    self:bindVM("level", function(value)
+        if levelLabel then
+            levelLabel:setString("Lv." .. (value or 1))
         end
     end)
     
     -- 绑定金币
-    self:bind("user", "gold", self._goldLabel, function(label, value)
-        if label then
-            label:setString("金币: " .. (value or 0))
+    self:bindVM("gold", function(value)
+        if goldLabel then
+            goldLabel:setString("金币: " .. (value or 0))
         end
     end)
     
-    -- 绑定经验
-    self:bind("user", "exp", self._expLabel, function(label, value, oldValue)
-        if label then
-            local vm = self:getViewModel()
-            local maxExp = vm:getModel("user"):get("maxExp")
-            label:setString(string.format("经验: %d/%d", value or 0, maxExp or 100))
+    -- 绑定经验（多节点绑定同一属性示例）
+    -- 1. 经验文本
+    self:bindVM("exp", function(value)
+        if expLabel then
+            local maxExp = vm:get("maxExp") or 100
+            expLabel:setString("经验: " .. (value or 0) .. "/" .. maxExp)
         end
     end)
     
-    -- 绑定经验条
-    self:bind("user", "exp", self._expBar, function(bar, value)
-        if bar then
-            local vm = self:getViewModel()
-            local maxExp = vm:getModel("user"):get("maxExp")
-            local percent = (value or 0) / (maxExp or 100)
-            bar:setPercent(percent * 100)
+    -- 2. 经验条
+    self:bindVM("exp", function(value)
+        if expBar then
+            local maxExp = vm:get("maxExp") or 100
+            local percent = (value or 0) / maxExp
+            expBar:setPercent(percent * 100)
         end
     end)
 end
 
 return MainView
-
