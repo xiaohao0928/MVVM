@@ -1,7 +1,7 @@
 local M = {}
 
 local modules = {
-    "Frame.Pool.Pool",
+    "Frame.Pool.ObjectPool",
 }
 
 function M.load()

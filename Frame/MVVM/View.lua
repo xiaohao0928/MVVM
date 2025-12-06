@@ -3,7 +3,7 @@
 ]]
 
 local ViewBinder = require("Frame.MVVM.Binder.ViewBinder")
-local Pool = require("Frame.MVVM.Pool")
+local ObjectPool = require("Frame.ObjectPool.ObjectPool")
 
 local View = class("View", function()
     return cc.Node:create()
@@ -14,7 +14,7 @@ function View:ctor(config)
     self._config = config
     
     -- 数据绑定器
-    self._binder = Pool.get(ViewBinder)
+    self._binder = ObjectPool.acquire(ViewBinder)
     
     -- csb根节点
     self._csbNode = nil
@@ -114,11 +114,11 @@ function View:destroy()
     if self._binder then
         local viewModel = self._binder:getViewModel()
         if viewModel then
-            Pool.release(viewModel)
+            ObjectPool.release(viewModel)
         end
         
         -- 归还 ViewBinder 到对象池
-        Pool.release(self._binder)
+        ObjectPool.release(self._binder)
         self._binder = nil
     end
     

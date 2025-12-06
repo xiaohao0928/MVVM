@@ -2,7 +2,7 @@
     对象池 - 复用频繁创建销毁的对象
 ]]
 
-local Pool = {}
+local ObjectPool = {}
 
 -- 各类对象的池
 local _pools = {}
@@ -28,7 +28,7 @@ end
     @param ... any 构造参数
     @return object 对象实例
 ]]
-function Pool.get(class, ...)
+function ObjectPool.acquire(class, ...)
     local className = class.__cname
     local pool = getPool(className)
     
@@ -56,7 +56,7 @@ end
     归还对象到池中
     @param obj object 对象实例
 ]]
-function Pool.release(obj)
+function ObjectPool.release(obj)
     if not obj._pooled then
         return
     end
@@ -82,7 +82,7 @@ end
     @param class table 类
     @param count number 数量
 ]]
-function Pool.preload(class, count)
+function ObjectPool.preload(class, count)
     local className = class.__cname
     local pool = getPool(className)
     
@@ -98,7 +98,7 @@ end
     清空指定类的对象池
     @param class table 类
 ]]
-function Pool.clear(class)
+function ObjectPool.clear(class)
     local className = class.__cname
     _pools[className] = nil
 end
@@ -106,9 +106,9 @@ end
 --[[
     清空所有对象池
 ]]
-function Pool.clearAll()
+function ObjectPool.clearAll()
     _pools = {}
 end
 
-return Pool
+return ObjectPool
 

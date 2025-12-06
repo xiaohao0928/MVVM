@@ -1,10 +1,8 @@
 --[[
     ViewModel基类 - 管理业务逻辑和命令
-    继承Observable使其具有可观察能力，View通过Binder绑定ViewModel的属性
-    通过ModelBinder绑定Model的属性，自动同步数据
 ]]
 
-local Pool = require("Frame.MVVM.Pool")
+local ObjectPool = require("Frame.ObjectPool.ObjectPool")
 local ModelManager = require("Frame.Manager.ModelManager")
 local Observable = require("Frame.MVVM.Observable")
 local ModelBinder = require("Frame.MVVM.Binder.ModelBinder")
@@ -21,7 +19,7 @@ function ViewModel:ctor()
     self._params = nil
     
     -- Model绑定器
-    self._modelBinder = Pool.get(ModelBinder)
+    self._modelBinder = ObjectPool.acquire(ModelBinder)
     self._modelBinder:setViewModel(self)
     
     -- 是否已初始化
@@ -64,7 +62,7 @@ function ViewModel:destroy()
     self._commands = {}
     self._params = nil
     if self._modelBinder then
-        Pool.release(self._modelBinder)
+        ObjectPool.release(self._modelBinder)
         self._modelBinder = nil
     end
     self._initialized = false
@@ -78,7 +76,7 @@ end
 function ViewModel:onReuse()
     self._commands = {}
     self._params = nil
-    self._modelBinder = Pool.get(ModelBinder)
+    self._modelBinder = ObjectPool.acquire(ModelBinder)
     self._modelBinder:setViewModel(self)
     self._initialized = false
 end

@@ -4,7 +4,7 @@
 
 local table_remove = table.remove
 
-local Pool = require("Frame.Pool.Pool")
+local ObjectPool = require("Frame.ObjectPool.ObjectPool")
 
 local UIManager = class("UIManager")
 
@@ -105,7 +105,7 @@ function UIManager:showView(uid, params)
     local viewModel = nil
     
     if config.viewModelClass then
-        viewModel = Pool.get(config.viewModelClass)
+        viewModel = ObjectPool.acquire(config.viewModelClass)
         viewModel:setParams(params)
         viewModel:initialize()
     end
