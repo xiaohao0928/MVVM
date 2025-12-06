@@ -2,30 +2,27 @@
     MVVM模块加载和卸载
 ]]
 
--- 获取基础路径
-local BASE = "Frame.MVVM"
-
 local M = {}
 
 local modules = {
-    "Observable",
-    "Model",
-    "ViewModel",
-    "View",
-    "Binder.Binder",
-    "Binder.ViewBinder",
-    "Binder.ModelBinder",
+    "Frame.MVVM.Observable",
+    "Frame.MVVM.Model",
+    "Frame.MVVM.ViewModel",
+    "Frame.MVVM.View",
+    "Frame.MVVM.Binder.Binder",
+    "Frame.MVVM.Binder.ViewBinder",
+    "Frame.MVVM.Binder.ModelBinder",
 }
 
 function M.load()
     for i = 1, #modules do
-        require(BASE .. "." .. modules[i])
+        require(modules[i])
     end
 end
 
 function M.unload()
     for i = 1, #modules do
-        package.loaded[BASE .. "." .. modules[i]] = nil
+        package.loaded[modules[i]] = nil
     end
 end
 
