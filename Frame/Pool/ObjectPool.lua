@@ -30,6 +30,11 @@ end
 ]]
 function ObjectPool.acquire(class, ...)
     local className = class.__cname
+    if not className then
+        -- 没有 __cname 的类不支持对象池，直接创建新对象
+        return class.new(...)
+    end
+    
     local pool = getPool(className)
     
     local obj
@@ -48,6 +53,8 @@ function ObjectPool.acquire(class, ...)
         obj = class.new(...)
     end
     
+    -- 保存类名用于 release 时查找池
+    obj._poolClassName = className
     obj._pooled = true
     return obj
 end
@@ -61,10 +68,16 @@ function ObjectPool.release(obj)
         return
     end
     
+    local className = obj._poolClassName
+    if not className then
+        -- 没有类名信息，无法归还到池中
+        obj._pooled = false
+        return
+    end
+    
     -- 标记为已回收，防止重复 release
     obj._pooled = false
     
-    local className = obj.class.__cname
     local pool = getPool(className)
     
     -- 重置对象状态
@@ -84,11 +97,19 @@ end
 ]]
 function ObjectPool.preload(class, count)
     local className = class.__cname
+    if not className then
+        -- 没有 __cname 的类不支持对象池
+        return
+    end
+    
     local pool = getPool(className)
     
     for i = 1, count do
         local obj = class.new()
-        obj._pooled = true
+        -- 保存类名用于 release 时查找池
+        obj._poolClassName = className
+        -- 池中的对象标记为未被使用，acquire 时才设为 true
+        obj._pooled = false
         pool.count = pool.count + 1
         pool.objects[pool.count] = obj
     end
@@ -100,7 +121,9 @@ end
 ]]
 function ObjectPool.clear(class)
     local className = class.__cname
-    _pools[className] = nil
+    if className then
+        _pools[className] = nil
+    end
 end
 
 --[[
