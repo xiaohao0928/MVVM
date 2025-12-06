@@ -39,8 +39,14 @@ function Observable:set(key, value, mode)
     -- 通知观察者
     local observers = self._observers[key]
     if observers then
+        -- 浅拷贝一份列表进行遍历，防止回调中修改原列表导致遍历异常
+        local copy = {}
         for i = 1, #observers do
-            observers[i](value, oldValue)
+            copy[i] = observers[i]
+        end
+        
+        for i = 1, #copy do
+            copy[i](value, oldValue)
         end
     end
 end

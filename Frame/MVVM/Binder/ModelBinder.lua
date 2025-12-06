@@ -38,7 +38,11 @@ function ModelBinder:bindModel(modelName, modelProperty, vmProperty)
     end
     
     -- 创建回调
+    local binderId = self._instanceId
     local function callback(newValue, oldValue)
+        if self._instanceId ~= binderId then
+            return
+        end
         viewModel:set(vmProperty, newValue)
     end
     

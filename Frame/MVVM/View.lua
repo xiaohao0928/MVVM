@@ -104,6 +104,11 @@ end
     销毁视图
 ]]
 function View:destroy()
+    if self._destroyed then
+        return
+    end
+    self._destroyed = true
+
     -- 调用子类销毁回调
     self:onDestroy()
     

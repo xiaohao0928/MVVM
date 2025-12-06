@@ -27,7 +27,14 @@ function ViewBinder:bindVM(propertyName, updateFunc)
     end
     
     -- 监听ViewModel属性变化
-    local disposer = viewModel:observe(propertyName, updateFunc)
+    local binderId = self._instanceId
+    local function safeUpdateFunc(newValue, oldValue)
+        if self._instanceId ~= binderId then
+            return
+        end
+        updateFunc(newValue, oldValue)
+    end
+    local disposer = viewModel:observe(propertyName, safeUpdateFunc)
     
     -- 保存绑定信息
     propBindings[#propBindings + 1] = {
@@ -73,7 +80,14 @@ function ViewBinder:bindModel(modelName, propertyName, updateFunc)
     end
     
     -- 直接监听Model属性变化
-    local disposer = model:observe(propertyName, updateFunc)
+    local binderId = self._instanceId
+    local function safeUpdateFunc(newValue, oldValue)
+        if self._instanceId ~= binderId then
+            return
+        end
+        updateFunc(newValue, oldValue)
+    end
+    local disposer = model:observe(propertyName, safeUpdateFunc)
     
     -- 保存绑定信息
     propBindings[#propBindings + 1] = {

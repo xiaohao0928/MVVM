@@ -5,6 +5,9 @@
 local Binder = class("Binder")
 
 function Binder:ctor()
+    -- 实例ID，用于解决回调时对象可能已回收复用的问题
+    self._instanceId = 0
+
     -- 绑定的ViewModel
     self._viewModel = nil
     
@@ -50,13 +53,14 @@ end
     解除所有绑定
 ]]
 function Binder:unbindAll()
-    for _, propBindings in pairs(self._bindings) do
+    local bindings = self._bindings
+    self._bindings = {}
+    
+    for _, propBindings in pairs(bindings) do
         for i = 1, #propBindings do
             propBindings[i].disposer()
         end
     end
-    
-    self._bindings = {}
 end
 
 --[[
@@ -80,6 +84,7 @@ end
 ]]
 function Binder:onRecycle()
     self:destroy()
+    self._instanceId = self._instanceId + 1
 end
 
 return Binder
