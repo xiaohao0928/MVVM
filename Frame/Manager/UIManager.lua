@@ -4,7 +4,7 @@
 
 local table_remove = table.remove
 
-local ObjectPool = require("Frame.ObjectPool.ObjectPool")
+local ObjectPool = require("Frame.Pool.ObjectPool")
 
 local UIManager = class("UIManager")
 

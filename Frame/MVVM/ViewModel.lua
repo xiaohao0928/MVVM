@@ -2,7 +2,7 @@
     ViewModel基类 - 管理业务逻辑和命令
 ]]
 
-local ObjectPool = require("Frame.ObjectPool.ObjectPool")
+local ObjectPool = require("Frame.Pool.ObjectPool")
 local ModelManager = require("Frame.Manager.ModelManager")
 local Observable = require("Frame.MVVM.Observable")
 local ModelBinder = require("Frame.MVVM.Binder.ModelBinder")

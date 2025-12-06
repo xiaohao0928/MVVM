@@ -3,7 +3,7 @@
 ]]
 
 local ViewBinder = require("Frame.MVVM.Binder.ViewBinder")
-local ObjectPool = require("Frame.ObjectPool.ObjectPool")
+local ObjectPool = require("Frame.Pool.ObjectPool")
 
 local View = class("View", function()
     return cc.Node:create()
