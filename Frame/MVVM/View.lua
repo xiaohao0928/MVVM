@@ -27,14 +27,14 @@ function View:ctor(config)
 end
 
 --[[
-    初始化回调，子类重写，这里创建ui
+    初始化回调，子类重写
 ]]
 function View:onInitialize()
     -- 子类实现
 end
 
 --[[
-    绑定回调，子类重写，这里绑定数据流
+    绑定回调，子类重写
 ]]
 function View:onBindViewModel()
     -- 子类实现
@@ -61,40 +61,40 @@ function View:initialize()
     -- 适配
     local winSize = cc.Director:getInstance():getWinSize()
 
-    self.m_center = self:getChild("Node_Center")
-    if not self.m_center then
-        self.m_center = cc.Node:create()
-        self:addChild(self.m_center)
+    self.m_nodeCenter = self:getChild("Node_Center")
+    if not self.m_nodeCenter then
+        self.m_nodeCenter = cc.Node:create()
+        self:addChild(self.m_nodeCenter)
     end
-    self.m_center:setPosition(winSize.width / 2, winSize.height / 2)
+    self.m_nodeCenter:setPosition(winSize.width / 2, winSize.height / 2)
 
-    self.m_left = self:getChild("Node_Left")
-    if not self.m_left then
-        self.m_left = cc.Node:create()
-        self:addChild(self.m_left)
+    self.m_nodeLeft = self:getChild("Node_Left")
+    if not self.m_nodeLeft then
+        self.m_nodeLeft = cc.Node:create()
+        self:addChild(self.m_nodeLeft)
     end
-    self.m_left:setPosition(0, winSize.height / 2)
+    self.m_nodeLeft:setPosition(0, winSize.height / 2)
 
-    self.m_right = self:getChild("Node_Right")
-    if not self.m_right then
-        self.m_right = cc.Node:create()
-        self:addChild(self.m_right)
+    self.m_nodeRight = self:getChild("Node_Right")
+    if not self.m_nodeRight then
+        self.m_nodeRight = cc.Node:create()
+        self:addChild(self.m_nodeRight)
     end
-    self.m_right:setPosition(winSize.width, winSize.height / 2)
+    self.m_nodeRight:setPosition(winSize.width, winSize.height / 2)
 
-    self.m_top = self:getChild("Node_Top")
-    if not self.m_top then
-        self.m_top = cc.Node:create()
-        self:addChild(self.m_top)
+    self.m_nodeTop = self:getChild("Node_Top")
+    if not self.m_nodeTop then
+        self.m_nodeTop = cc.Node:create()
+        self:addChild(self.m_nodeTop)
     end
-    self.m_top:setPosition(winSize.width / 2, winSize.height)
+    self.m_nodeTop:setPosition(winSize.width / 2, winSize.height)
 
-    self.m_bottom = self:getChild("Node_Bottom")
-    if not self.m_bottom then
-        self.m_bottom = cc.Node:create()
-        self:addChild(self.m_bottom)
+    self.m_nodeBottom = self:getChild("Node_Bottom")
+    if not self.m_nodeBottom then
+        self.m_nodeBottom = cc.Node:create()
+        self:addChild(self.m_nodeBottom)
     end
-    self.m_bottom:setPosition(winSize.width / 2, 0)
+    self.m_nodeBottom:setPosition(winSize.width / 2, 0)
     
     self:onInitialize()
     self._initialized = true
